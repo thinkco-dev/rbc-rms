@@ -19,6 +19,14 @@ function getCookie(name: string): string | null {
   return cookie ? decodeURIComponent(cookie.split("=")[1]) : null;
 }
 
+async function ensureCsrfToken() {
+  if (getCookie("csrftoken")) return;
+
+  await fetch(`${API_BASE_URL}/admin/login/`, {
+    credentials: "include",
+  });
+}
+
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const method = init.method?.toUpperCase() || "GET";
   const headers = new Headers(init.headers);
@@ -27,6 +35,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
     headers.set("Content-Type", "application/json");
   }
   if (method !== "GET" && method !== "HEAD") {
+    await ensureCsrfToken();
     const csrfToken = getCookie("csrftoken");
     if (csrfToken) headers.set("X-CSRFToken", csrfToken);
   }

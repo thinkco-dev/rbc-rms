@@ -27,7 +27,7 @@ class RawMaterialSerializer(serializers.ModelSerializer):
 
 class CostLayerSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(source="cost_layer_id", read_only=True)
-    raw_material_id = serializers.IntegerField(source="raw_material_id", read_only=True)
+    raw_material_id = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = CostLayer

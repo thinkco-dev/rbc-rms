@@ -180,7 +180,16 @@ export function useInventory() {
       unit_cost: data.unitCost,
       reorder_threshold: data.target,
     });
-    setIngredients((prev) => [...prev, toIngredient(created)]);
+    let material = created;
+    if (data.qty > 0) {
+      const receipt = await api.post<{ raw_material: BackendRawMaterial }>("/api/v1/inventory/receipts/", {
+        raw_material_id: created.id,
+        quantity: data.qty,
+        unit_cost: data.unitCost,
+      });
+      material = receipt.raw_material;
+    }
+    setIngredients((prev) => [...prev, toIngredient(material)]);
     setError(null);
   };
 
